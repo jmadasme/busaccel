@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BusAccel-8266-v2 — Monitor de aceleración</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ======================= HEADER ======================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="40" height="40">
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00e5ff"/>
+              <stop offset="100%" stop-color="#00b3cc"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="20" width="36" height="8" rx="4" fill="url(#lg1)"/>
+          <circle cx="14" cy="24" r="3.4" fill="#0b0e14"/>
+          <circle cx="26" cy="24" r="3.4" fill="#0b0e14"/>
+          <path d="M24 10 l3 6 -6 0 z" fill="#ffb300"/>
+          <path d="M24 38 l-3 -6 6 0 z" fill="#ff2d55"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>BusAccel<span>-8266</span></h1>
+        <p>Monitor en tiempo real · GY-291 (ADXL345) · NodeMCU ESP8266</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <div id="connPill" class="pill pill-idle" title="Estado de conexión">
+        <span class="dot"></span><span id="connLabel">Sin conexión</span>
+      </div>
+      <div class="port-ctl">
+        <label for="portSelect">Puerto</label>
+        <select id="portSelect"></select>
+      </div>
+      <div class="port-ctl baud">
+        <label for="baudSelect">Baud</label>
+        <select id="baudSelect">
+          <option value="115200" selected>115200</option>
+          <option value="9600">9600</option>
+          <option value="57600">57600</option>
+          <option value="230400">230400</option>
+        </select>
+      </div>
+      <button id="openLogBtn" class="btn btn-ghost" title="Reproducir una captura de sesión guardada (log de CuTTeM)">Captura…</button>
+      <button id="connectBtn" class="btn btn-connect">Conectar</button>
+    </div>
+  </header>
+
+  <!-- ======================= MAIN ======================= -->
+  <main class="layout">
+
+    <!-- Columna principal: gráfico -->
+    <section class="card chart-card">
+      <div class="card-head">
+        <div class="card-title">
+          <span class="title-glow"></span>
+          <h2>Eje Z — aceleración en el tiempo</h2>
+          <span class="subtitle">Ventana deslizante · detecciones ↑/↓ sobre el setpoint</span>
+        </div>
+        <div class="chart-tools">
+          <label class="toggle" title="Mostrar/ocultar eje X">
+            <input type="checkbox" id="chkX"><span>X</span>
+          </label>
+          <label class="toggle" title="Mostrar/ocultar eje Y">
+            <input type="checkbox" id="chkY"><span>Y</span>
+          </label>
+          <label class="toggle" title="Pausar gráfico">
+            <input type="checkbox" id="chkPause"><span>❚❚</span>
+          </label>
+          <button id="clearBtn" class="btn btn-ghost" title="Limpiar buffer">Limpiar</button>
+        </div>
+      </div>
+
+      <!-- Barra de reproducción de captura (solo en modo REPLAY) -->
+      <div id="replayBar" class="replay-bar hidden">
+        <span class="rb-icon">▶</span>
+        <span class="rb-label">Reproduciendo captura</span>
+        <span id="rbFile" class="rb-file">—</span>
+        <span id="rbPos" class="rb-pos">0 / 0</span>
+        <span class="rb-speed">
+          velocidad
+          <select id="rbSpeed">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="4">4×</option>
+            <option value="20">20×</option>
+            <option value="100">100×</option>
+            <option value="0">máxima</option>
+          </select>
+        </span>
+        <input id="rbFileInput" type="file" accept=".log,.txt,text/plain" class="hidden">
+        <button id="rbOpen" class="btn btn-ghost btn-sm">Abrir…</button>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="chart"></canvas>
+        <div id="emptyOverlay" class="empty-overlay">
+          <div class="empty-icon">◉</div>
+          <p class="empty-title">Esperando datos del acelerómetro…</p>
+          <p class="empty-sub">Conecta el puerto serial, <b>Simulador</b> o <b>Captura…</b> para ver una sesión ya grabada.</p>
+          <button id="simBtn" class="btn btn-sim">▶ Modo simulador</button>
+        </div>
+      </div>
+
+      <div class="chart-legend">
+        <span class="lg"><i class="sw" style="--c:#00e5ff"></i>Z (g)</span>
+        <span class="lg"><i class="sw dashed" style="--c:#9aa4b2"></i>Setpoint Z</span>
+        <span class="lg"><i class="sw" style="--c:#ffb300"></i>Leve (±0.20 g)</span>
+        <span class="lg"><i class="sw" style="--c:#ff2d55"></i>Severo (≥0.24 g)</span>
+        <span class="lg"><i class="sw" style="--c:#00e676"></i>+ subida</span>
+        <span class="lg"><i class="sw" style="--c:#448aff"></i>− caída</span>
+        <span class="lg"><i class="sw" style="--c:#ff453a"></i>* severa</span>
+        <span class="lg"><i class="sw" style="--c:#ff2dff"></i>! severa</span>
+      </div>
+    </section>
+
+    <!-- Barra lateral -->
+    <aside class="side">
+
+      <!-- Badge último símbolo -->
+      <section class="card badge-card">
+        <h3>Última detección</h3>
+        <div class="badge" id="badge">
+          <div class="badge-sym" id="badgeSym">·</div>
+          <div class="badge-info">
+            <div class="badge-label" id="badgeLabel">REPOSO</div>
+            <div class="badge-sub" id="badgeSub">sin desviación</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Estadísticas -->
+      <section class="card stats-card">
+        <h3>Estadísticas</h3>
+        <div class="stats-grid">
+          <div class="stat"><span class="k">Hz</span><span class="v" id="statHz">0.0</span></div>
+          <div class="stat"><span class="k">Muestras</span><span class="v" id="statSamples">0</span></div>
+          <div class="stat"><span class="k">t (s)</span><span class="v" id="statT">0.0</span></div>
+          <div class="stat"><span class="k">Setpoint Z</span><span class="v" id="statSet">—</span></div>
+        </div>
+        <div class="counters">
+          <div class="ctr" style="--c:#00e676"><b id="cntPlus">0</b><span>+ subida leve</span></div>
+          <div class="ctr" style="--c:#448aff"><b id="cntMinus">0</b><span>− caída leve</span></div>
+          <div class="ctr" style="--c:#ff453a"><b id="cntStar">0</b><span>* subida severa</span></div>
+          <div class="ctr" style="--c:#ff2dff"><b id="cntExcl">0</b><span>! caída severa</span></div>
+        </div>
+      </section>
+
+      <!-- Ajustes de ventana -->
+      <section class="card settings-card">
+        <h3>Ventana de tiempo</h3>
+        <div class="range-row">
+          <input type="range" id="windowRange" min="10" max="120" step="5" value="60">
+          <span class="range-val" id="windowVal">60 s</span>
+        </div>
+        <h3>Umbrales (visual)</h3>
+        <div class="th-row">
+          <label>Leve <span class="th-in" id="thLeve">0.20</span> g</label>
+          <label>Severo <span class="th-in" id="thSevero">0.24</span> g</label>
+        </div>
+      </section>
+
+      <!-- Resúmenes de evento (lo que el firmware publica por MQTT) -->
+      <section class="card events-card">
+        <h3>Eventos detectados <span id="summCount" class="h3-sub">0</span></h3>
+        <ul id="summList" class="event-list">
+          <li class="event-empty">Sin eventos todavía</li>
+        </ul>
+      </section>
+
+      <!-- Últimas detecciones muestra a muestra -->
+      <section class="card events-card">
+        <h3>Últimas detecciones</h3>
+        <ul id="eventList" class="event-list">
+          <li class="event-empty">Sin eventos todavía</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+
+  <!-- ======================= FOOTER ======================= -->
+  <footer class="statusbar">
+    <span id="stPort" class="st-item">Puerto: —</span>
+    <span id="stError" class="st-item st-error"></span>
+    <span class="st-spacer"></span>
+    <span id="stRaw" class="st-item st-raw">Última línea: —</span>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
