@@ -12,8 +12,6 @@ Cada carpeta conserva el contenido original de su etapa, sin `.git`, dependencia
 instaladas ni binarios pesados. La documentación de operación y de código está en
 [`docs/`](docs/), y el sitio del proyecto en [`docs/index.html`](docs/index.html).
 
-> **Nota de preservación:** se removieron credenciales, claves o tokens detectados en 1 archivo(s) de esta familia. Los ejemplos y plantillas seguras se conservan.
-
 ## Índice de versiones
 
 | Versión | Qué aporta | Archivos |
@@ -38,6 +36,60 @@ arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 .
 
 Sin secrets.h el sketch no compila. El umbral y el intervalo de muestreo están en el código y se explican en el datasheet.
 
+<!-- ficha -->
+## Ficha de evaluación
+
+**Madurez global: 4.0/5**
+
+| Criterio | Nota | Evidencia |
+|---|---:|---|
+| Madurez | 4/5 | v4 compilada y validada en banco con golpes manuales; sin prueba en ruta ni calibración trazable. |
+| Reproducibilidad | 3/5 | Requiere NodeMCU, ADXL345 y ajuste de umbrales; el firmware y las métricas de memoria están documentados. |
+| Documentación | 5/5 | README extenso, datasheet, developer, BITACORA y referencias explican muestreo, contrato MQTT y decisiones. |
+| Honestidad de límites | 5/5 | Declara que no flota, que no hay calibración trazable ni TLS, y que la IRAM llega al 93 por ciento. |
+| Valor demostrativo | 4/5 | Muestra detección en el borde y publicación por evento con una ventana de un segundo alrededor del pico. |
+| Facilidad de despliegue | 3/5 | Se flashea con arduino-cli, pero exige calibrar el setpoint y un broker MQTT; el modo seco viene activo. |
+
+Prototipo de instrumentación bien documentado que resuelve la saturación del serial con detección local; falta validación en ruta y calibración trazable para considerarlo un equipo de producción.
+
+## Lo que no funcionó
+
+### BusAccel-8266 — La WiFi contaminaba las mediciones
+
+La primera versión mantenía el stack WiFi activo y se observaron latencias, reinicios bajo carga de radio y publicidad de red que ensuciaban las lecturas. Se eliminó WiFi, MQTT y el servidor web del firmware; la placa quedó como instrumento de medición que emite CSV y el gráfico pasó a una app de escritorio.
+
+### BusAccel-8266-v2 — La ventana cruda saturaba serial y broker
+
+Cada evento publicaba un resumen y cinco chunks de cuarenta muestras, además de doscientas líneas EV por el puerto serie. A 115200 baudios eso ocupaba casi un segundo por evento y multiplicaba los mensajes MQTT. La v3 eliminó los chunks y publica solo el pico, con el buffer reducido de 1024 a 384 bytes.
+
+### BusAccel-8266-v2 — Contador RTC sin validar
+
+El identificador de evento se guardaba en RTC user memory, pero al arrancar no se comprobaba su contenido: podía tomar basura y numerar mal los eventos. La v3 añadió una marca mágica, verificación de rango y descarte del cero. También corrigió el uso de ESP.rtcUserMemoryRead/Write, que espera bytes y no palabras.
+
+## Preguntas típicas
+
+**¿Por qué hay cuatro versiones?**
+
+Cada una resuelve un problema de la anterior: registro crudo, detección fallida, saturación del serial y umbral final.
+
+**¿Qué significa 0.58 g?**
+
+Es el umbral de aceleración que separó eventos reales de vibración normal en las pruebas del autor.
+
+**¿Sirve para otro vehículo?**
+
+Sí, pero hay que recalibrar. La vibración de un bus no es la de un auto.
+
+**¿Se pierden datos?**
+
+Se descarta la señal continua y se conserva la ventana del evento. Es una decisión de diseño, no un error.
+
+**¿Puedo usar ESP32?**
+
+El código es de ESP8266; portarlo requiere revisar pines y librerías WiFi.
+
+<!-- /ficha -->
+
 ## Documentación
 
 - [`docs/datasheet.md`](docs/datasheet.md) — instalación, operación y límites.
@@ -45,9 +97,9 @@ Sin secrets.h el sketch no compila. El umbral y el intervalo de muestreo están 
 - [`docs/REFERENCES.md`](docs/REFERENCES.md) — estándares, librerías y fuentes.
 - [`docs/index.html`](docs/index.html) — página del proyecto (GitHub Pages).
 
-## Alcance y honestidad
+## El proyecto en detalle
 
-## BusAccel-8266-v4
+### BusAccel-8266-v4
 
 **Nodo acelerómetro para bus urbano: detección de golpes verticales, pico del evento y telemetría MQTT condicional sobre ESP8266 + ADXL345.**
 

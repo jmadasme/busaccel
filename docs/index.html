@@ -156,6 +156,39 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
 .rich .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0}
 .rich .card-grid .card{margin:0}
 
+
+.rich h3{margin:26px 0 8px}
+.rich p{margin:0 0 14px;color:var(--muted);line-height:1.7}
+.fail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:6px}
+.fail{background:rgba(11,34,43,.55);border:1px solid var(--line);border-radius:14px;padding:18px}
+.fail .v{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--warm,#D6A86A)}
+.fail h3{font-size:16px;margin:8px 0 6px}
+.fail p{font-size:14px;margin:0;color:var(--muted)}
+.rating-head{display:flex;align-items:center;gap:20px;margin:6px 0 18px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:rgba(11,34,43,.55)}
+.rating-avg{font-family:var(--mono);font-size:40px;line-height:1;color:var(--accent)}
+.rating-avg small{font-size:14px;color:var(--muted)}
+.rating-head p{margin:4px 0 0;font-size:14px;color:var(--muted);max-width:70ch}
+.rating{display:grid;gap:2px}
+.rating-row{display:grid;grid-template-columns:165px minmax(90px,1fr) 48px;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.rating-row:last-child{border-bottom:0}
+.rating-name{font-size:13.5px;font-weight:600}
+.rating-bar{height:6px;border-radius:99px;background:rgba(148,190,200,.14);overflow:hidden}
+.rating-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.rating-score{font-family:var(--mono);font-size:12.5px;color:var(--accent);text-align:right}
+.rating-note{grid-column:2/-1;font-size:12.5px;color:var(--muted);margin-top:-4px}
+.faq{display:grid;gap:0;margin-top:4px}
+.faq details{border-bottom:1px solid var(--line);padding:14px 0}
+.faq summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"+";display:inline-block;width:18px;color:var(--accent);font-family:var(--mono)}
+.faq details[open] summary::before{content:"–"}
+.faq p{margin:10px 0 0 18px;font-size:14px;color:var(--muted)}
+@media(max-width:720px){
+  .fail-grid{grid-template-columns:1fr}
+  .rating-head{flex-direction:column;align-items:flex-start}
+  .rating-row{grid-template-columns:120px 1fr 44px}
+}
+
 </style>
 <link rel="stylesheet" href="assets/community.css?v=1">
 </head>
@@ -188,15 +221,7 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
 
 <section class="stats"><div class="wrap stats-grid"><div class="stat"><div class="stat-num">4</div><div class="stat-label">versiones</div></div><div class="stat"><div class="stat-num">0.58</div><div class="stat-label">g de umbral</div></div><div class="stat"><div class="stat-num">115200</div><div class="stat-label">baudios</div></div><div class="stat"><div class="stat-num">1</div><div class="stat-label">tópico MQTT</div></div></div></section>
 
-<section class="section" id="proyecto"><div class="wrap">
-  <div class="section-head reveal"><div class="kicker">01 — El proyecto</div><h2>Qué resuelve</h2><p class="section-sub">Familia de firmware ESP8266 para detectar aceleraciones bruscas en un vehículo. Cada versión corrige un problema concreto: saturación del puerto serial, ruido del sensor y falsos positivos.</p></div>
-  <div class="two">
-    <div class="card reveal"><span class="tag">Problema</span><h3>El punto de partida</h3><p>El acelerómetro entrega cientos de muestras por segundo; enviarlas completas por serial bloquea el puerto y esconde el evento que se quiere medir.</p></div>
-    <div class="card reveal"><span class="tag">Solución</span><h3>La propuesta</h3><p>Detectar localmente, guardar una ventana alrededor del pico y publicar por MQTT solo los eventos que superan un umbral calibrado con datos reales.</p></div>
-  </div>
-</div></section>
-
-<section class="section" id="versiones"><div class="wrap">
+<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">El concepto</div><h2>Qué es y por qué existe</h2></div><div class="rich reveal"><p>busaccel es un registrador de impactos para vehículos construido sobre ESP8266 y un acelerómetro ADXL345. El firmware muestrea a unos 100 Hz, calcula un setpoint con las primeras veinte lecturas en reposo y detecta desviaciones del eje Z; guarda una ventana de un segundo antes y otro después del pico, y publica por MQTT solo los eventos que superan 0,58 g.</p><p>Está pensado para quien necesita saber cuánto golpeó un bus o un vehículo de flota sin transmitir cientos de muestras por segundo. Importa porque resuelve el problema en el borde: la detección y el recorte ocurren en la placa, el puerto serie queda para diagnóstico y la red recibe un único mensaje útil. La versión actual fue validada en banco, no en ruta.</p></div></div></section><section class="section" id="versiones"><div class="wrap">
   <div class="section-head reveal"><div class="kicker">02 — Versiones</div><h2>La historia, completa.</h2><p class="section-sub">Cada carpeta conserva una etapa del proyecto. No se borraron las anteriores: se pusieron en contexto.</p></div>
   <div class="versions"><article class="version reveal">
   <div class="version-top"><h3>BusAccel-8266</h3><span class="count">13 archivos</span></div>
@@ -216,23 +241,23 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
   <a href="https://github.com/jmadasme/busaccel/tree/main/versions/BusAccel-8266-v4" target="_blank" rel="noopener">Ver carpeta <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
 </article></div>
 </div></section>
-<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">01 — La idea</div><h2>No todos los golpes merecen un mensaje</h2><p class="section-sub">El bus vibra todo el tiempo. El reto es distinguir el ruido de la carretera de un impacto que justifique revisar el vehículo.</p></div><div class="rich reveal"><div class="card-grid">
+<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">03 — La idea</div><h2>No todos los golpes merecen un mensaje</h2><p class="section-sub">El bus vibra todo el tiempo. El reto es distinguir el ruido de la carretera de un impacto que justifique revisar el vehículo.</p></div><div class="rich reveal"><div class="card-grid">
 <div class="card"><h3>El problema</h3><div><div></div><p>Publicar cada lectura del acelerómetro satura la red y llena la base de datos con vibración normal. Ignorar todo lo que supera un umbral fijo genera falsos positivos por baches menores.</p></div></div>
 <div class="card"><h3>La solución</h3><div><div></div><p>El nodo muestrea a 100 Hz, calcula un setpoint automático y abre una ventana de ±1 s alrededor del evento. Solo publica si el pico supera 0,58 g, con el contexto necesario para analizarlo después.</p></div></div>
 </div></div></div></section>
-<section class="section"><div class="wrap"><div class="section-head reveal"><div class="kicker">02 — El recorrido</div><h2>Cómo funciona, paso a paso</h2><p class="section-sub">Medir, filtrar y publicar solo lo que importa.</p></div><div class="rich reveal"><div class="timeline">
+<section class="section"><div class="wrap"><div class="section-head reveal"><div class="kicker">04 — El recorrido</div><h2>Cómo funciona, paso a paso</h2><p class="section-sub">Medir, filtrar y publicar solo lo que importa.</p></div><div class="rich reveal"><div class="timeline">
 <div class="step"><div class="step-n">01</div><h4>Muestrear</h4><div><p>El ADXL345 entrega aceleración en los tres ejes a 100 Hz por I2C.</p></div></div>
 <div class="step"><div class="step-n">02</div><h4>Calibrar</h4><div><p>El nodo calcula un setpoint con la vibración de base y lo ajusta con el comando RECAL.</p></div></div>
 <div class="step"><div class="step-n">03</div><h4>Detectar</h4><div><p>Cuando la aceleración supera el umbral de evento, se abre una ventana de ±1 s.</p></div></div>
 <div class="step"><div class="step-n">04</div><h4>Publicar</h4><div><p>Si el pico de la ventana supera 0,58 g, se envía el evento por MQTT con sus datos.</p></div></div>
 </div></div></div></section>
-<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">03 — Bajo el capó</div><h2>El filtro está en el borde</h2><p class="section-sub">Publicar menos es parte del diseño: el nodo decide antes de gastar red.</p></div><div class="rich reveal"><figure><img src="assets/rich/architecture.svg" alt="Nodo BusAccel con ESP8266, ADXL345 y broker MQTT" loading="lazy"><figcaption>El acelerómetro mide; el ESP8266 filtra; MQTT recibe solo eventos.</figcaption></figure>
+<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">05 — Bajo el capó</div><h2>El filtro está en el borde</h2><p class="section-sub">Publicar menos es parte del diseño: el nodo decide antes de gastar red.</p></div><div class="rich reveal"><figure><img src="assets/rich/architecture.svg" alt="Nodo BusAccel con ESP8266, ADXL345 y broker MQTT" loading="lazy"><figcaption>El acelerómetro mide; el ESP8266 filtra; MQTT recibe solo eventos.</figcaption></figure>
 <div class="card-grid">
 <div class="card"><h3>Setpoint automático</h3><div><p>La vibración normal del bus define la línea base, no un valor mágico.</p></div></div>
 <div class="card"><h3>Ventana con contexto</h3><div><p>El evento guarda lo que pasó antes y después del pico, no solo el máximo.</p></div></div>
 <div class="card"><h3>Publicación selectiva</h3><div><p>Solo los eventos que superan 0,58 g llegan al broker.</p></div></div>
 </div></div></div></section>
-<section class="section"><div class="wrap"><div class="section-head reveal"><div class="kicker">04 — Lo que lo hace distinto</div><h2>Decisiones de ingeniería</h2><p class="section-sub">Un nodo de borde que decide antes de transmitir.</p></div><div class="rich reveal"><div class="features">
+<section class="section"><div class="wrap"><div class="section-head reveal"><div class="kicker">06 — Lo que lo hace distinto</div><h2>Decisiones de ingeniería</h2><p class="section-sub">Un nodo de borde que decide antes de transmitir.</p></div><div class="rich reveal"><div class="features">
 <div class="feature"><h3>ADXL345</h3><div><p>Acelerómetro de tres ejes por I2C, configuración de rango y frecuencia.</p></div></div>
 <div class="feature"><h3>Detección de picos</h3><div><p>Ventana de ±1 s a 100 Hz para capturar el contexto del impacto.</p></div></div>
 <div class="feature"><h3>MQTT</h3><div><p>Publicación de eventos con tópico y payload documentados.</p></div></div>
@@ -240,19 +265,18 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
 <div class="feature"><h3>WiFi local</h3><div><p>Credenciales en secrets.h, fuera del repositorio.</p></div></div>
 <div class="feature"><h3>Trazabilidad</h3><div><p>Cada evento conserva los datos necesarios para correlacionarlo con un viaje.</p></div></div>
 </div></div></div></section>
-<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">05 — Diagramas</div><h2>El sistema, en dibujos</h2><p class="section-sub">Los diagramas se mantienen en el repositorio y se actualizan con el código.</p></div><div class="rich reveal"><figure><img src="assets/rich/event-window.svg" alt="BusAccel — event window" loading="lazy"><figcaption>Event Window</figcaption></figure>
+<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">07 — Diagramas</div><h2>El sistema, en dibujos</h2><p class="section-sub">Los diagramas se mantienen en el repositorio y se actualizan con el código.</p></div><div class="rich reveal"><figure><img src="assets/rich/event-window.svg" alt="BusAccel — event window" loading="lazy"><figcaption>Event Window</figcaption></figure>
 <figure><img src="assets/rich/pinout.svg" alt="BusAccel — pinout" loading="lazy"><figcaption>Pinout</figcaption></figure></div></div></section>
-<section class="section"><div class="wrap"><div class="section-head reveal"><div class="kicker">06 — Stack y arranque</div><h2>Con qué está construido</h2><p class="section-sub">Arduino core para ESP8266, biblioteca del ADXL345, PubSubClient para MQTT y WiFiManager o configuración local para la red.</p></div><div class="rich reveal"><p>ESP8266 ADXL345 Arduino I2C MQTT PubSubClient Las credenciales WiFi y del broker viven en secrets.h, excluido por .gitignore.</p>
+<section class="section"><div class="wrap"><div class="section-head reveal"><div class="kicker">08 — Stack y arranque</div><h2>Con qué está construido</h2><p class="section-sub">Arduino core para ESP8266, biblioteca del ADXL345, PubSubClient para MQTT y WiFiManager o configuración local para la red.</p></div><div class="rich reveal"><p>ESP8266 ADXL345 Arduino I2C MQTT PubSubClient Las credenciales WiFi y del broker viven en secrets.h, excluido por .gitignore.</p>
 <p>BusAccel · compilación</p>
 <pre><span>$</span> arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 .
 <span>$</span> arduino-cli upload -p /dev/ttyUSB0 --fqbn esp8266:esp8266:nodemcuv2 .</pre></div></div></section>
-<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">07 — Documentación</div><h2>Todo está escrito</h2><p class="section-sub">Cada decisión, cada límite y cada comando están documentados en el repositorio. Sin folletos: lo que funciona se muestra, lo que no, también.</p></div><div class="rich reveal"><div class="card-grid">
+<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">09 — Documentación</div><h2>Todo está escrito</h2><p class="section-sub">Cada decisión, cada límite y cada comando están documentados en el repositorio. Sin folletos: lo que funciona se muestra, lo que no, también.</p></div><div class="rich reveal"><div class="card-grid">
 <a class="card" href=""><h3>La guía completa</h3><p>Hardware, montaje, calibración, umbrales y MQTT.</p></a>
 <a class="card" href=""><h3>Manual de operación</h3><p>Pines, I2C, LED, comando RECAL y diagnóstico.</p></a>
 <a class="card" href=""><h3>Guía de código</h3><p>Muestreo, ventana, setpoint y publicación.</p></a>
 <a class="card" href=""><h3>Referencias</h3><p>ADXL345, ESP8266, MQTT y Arduino.</p></a>
-</div></div></div></section>
-<section class="cta"><div class="wrap"><div class="cta-box reveal">
+</div></div></div></section><section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">Lo que no funcionó</div><h2>Los tropiezos, documentados</h2><p class="section-sub">Las primeras versiones existen para que estos errores no se repitan: cada una dejó una decisión de diseño verificable.</p></div><div class="fail-grid reveal"><div class="fail"><div class="v">BusAccel-8266</div><h3>La WiFi contaminaba las mediciones</h3><p>La primera versión mantenía el stack WiFi activo y se observaron latencias, reinicios bajo carga de radio y publicidad de red que ensuciaban las lecturas. Se eliminó WiFi, MQTT y el servidor web del firmware; la placa quedó como instrumento de medición que emite CSV y el gráfico pasó a una app de escritorio.</p></div><div class="fail"><div class="v">BusAccel-8266-v2</div><h3>La ventana cruda saturaba serial y broker</h3><p>Cada evento publicaba un resumen y cinco chunks de cuarenta muestras, además de doscientas líneas EV por el puerto serie. A 115200 baudios eso ocupaba casi un segundo por evento y multiplicaba los mensajes MQTT. La v3 eliminó los chunks y publica solo el pico, con el buffer reducido de 1024 a 384 bytes.</p></div><div class="fail"><div class="v">BusAccel-8266-v2</div><h3>Contador RTC sin validar</h3><p>El identificador de evento se guardaba en RTC user memory, pero al arrancar no se comprobaba su contenido: podía tomar basura y numerar mal los eventos. La v3 añadió una marca mágica, verificación de rango y descarte del cero. También corrigió el uso de ESP.rtcUserMemoryRead/Write, que espera bytes y no palabras.</p></div></div></div></section><section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">Ficha de evaluación</div><h2>Cómo se mide este proyecto</h2><p class="section-sub">Seis criterios con la misma escala en todo el catálogo, para comparar sin marketing.</p></div><div class="rating-head reveal"><div class="rating-avg">4.0<small>/5</small></div><div><strong>Madurez global</strong><p>Prototipo de instrumentación bien documentado que resuelve la saturación del serial con detección local; falta validación en ruta y calibración trazable para considerarlo un equipo de producción.</p></div></div><div class="rating reveal"><div class="rating-row"><div class="rating-name">Madurez</div><div class="rating-bar"><i style="width:80%"></i></div><div class="rating-score">4/5</div><div class="rating-note">v4 compilada y validada en banco con golpes manuales; sin prueba en ruta ni calibración trazable.</div></div><div class="rating-row"><div class="rating-name">Reproducibilidad</div><div class="rating-bar"><i style="width:60%"></i></div><div class="rating-score">3/5</div><div class="rating-note">Requiere NodeMCU, ADXL345 y ajuste de umbrales; el firmware y las métricas de memoria están documentados.</div></div><div class="rating-row"><div class="rating-name">Documentación</div><div class="rating-bar"><i style="width:100%"></i></div><div class="rating-score">5/5</div><div class="rating-note">README extenso, datasheet, developer, BITACORA y referencias explican muestreo, contrato MQTT y decisiones.</div></div><div class="rating-row"><div class="rating-name">Honestidad de límites</div><div class="rating-bar"><i style="width:100%"></i></div><div class="rating-score">5/5</div><div class="rating-note">Declara que no flota, que no hay calibración trazable ni TLS, y que la IRAM llega al 93 por ciento.</div></div><div class="rating-row"><div class="rating-name">Valor demostrativo</div><div class="rating-bar"><i style="width:80%"></i></div><div class="rating-score">4/5</div><div class="rating-note">Muestra detección en el borde y publicación por evento con una ventana de un segundo alrededor del pico.</div></div><div class="rating-row"><div class="rating-name">Facilidad de despliegue</div><div class="rating-bar"><i style="width:60%"></i></div><div class="rating-score">3/5</div><div class="rating-note">Se flashea con arduino-cli, pero exige calibrar el setpoint y un broker MQTT; el modo seco viene activo.</div></div></div></div></section><section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">Preguntas típicas</div><h2>Lo que suelen preguntar</h2></div><div class="faq reveal"><details><summary>¿Por qué hay cuatro versiones?</summary><p>Cada una resuelve un problema de la anterior: registro crudo, detección fallida, saturación del serial y umbral final.</p></details><details><summary>¿Qué significa 0.58 g?</summary><p>Es el umbral de aceleración que separó eventos reales de vibración normal en las pruebas del autor.</p></details><details><summary>¿Sirve para otro vehículo?</summary><p>Sí, pero hay que recalibrar. La vibración de un bus no es la de un auto.</p></details><details><summary>¿Se pierden datos?</summary><p>Se descarta la señal continua y se conserva la ventana del evento. Es una decisión de diseño, no un error.</p></details><details><summary>¿Puedo usar ESP32?</summary><p>El código es de ESP8266; portarlo requiere revisar pines y librerías WiFi.</p></details></div></div></section><section class="cta"><div class="wrap"><div class="cta-box reveal">
   <div class="kicker">Siguiente paso</div><h2>¿Te animás?</h2>
   <p>Usá esta familia como base para busaccel. Está documentada para que puedas entenderla, ejecutarla y continuarla sin adivinar.</p>
   <div class="hero-actions" style="justify-content:center"><a class="btn btn-primary" href="https://github.com/jmadasme/busaccel" target="_blank" rel="noopener">Abrir el repositorio <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-ghost" href="/iot/">Ver más de IoT</a></div>
