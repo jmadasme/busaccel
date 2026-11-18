@@ -191,12 +191,14 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
 
 </style>
 <link rel="stylesheet" href="assets/community.css?v=1">
+<link href="rec/player.css?v=1" rel="stylesheet"/>
 </head>
 <body>
 <header class="nav"><div class="wrap nav-in">
   <a class="brand" href="/"><span class="brand-mark"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg></span><span>jmadasme<span style="color:var(--accent)">.</span>portfolio</span></a>
   <nav class="nav-links">
-    <a href="#proyecto">Proyecto</a><a href="#versiones">Versiones</a><a href="#stack">Stack</a><a href="#docs">Docs</a><a href="#comunidad">Comunidad</a>
+    <a href="#proyecto">Proyecto</a><a href="#versiones">Versiones</a><a href="#stack">Stack</a><a href="#video">Video</a>
+<a href="#docs">Docs</a><a href="#comunidad">Comunidad</a>
     <a class="btn btn-ghost" style="padding:9px 15px" href="/iot/">← IoT</a>
   </nav>
 </div></header>
@@ -221,7 +223,46 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
 
 <section class="stats"><div class="wrap stats-grid"><div class="stat"><div class="stat-num">4</div><div class="stat-label">versiones</div></div><div class="stat"><div class="stat-num">0.58</div><div class="stat-label">g de umbral</div></div><div class="stat"><div class="stat-num">115200</div><div class="stat-label">baudios</div></div><div class="stat"><div class="stat-num">1</div><div class="stat-label">tópico MQTT</div></div></div></section>
 
-<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">El concepto</div><h2>Qué es y por qué existe</h2></div><div class="rich reveal"><p>busaccel es un registrador de impactos para vehículos construido sobre ESP8266 y un acelerómetro ADXL345. El firmware muestrea a unos 100 Hz, calcula un setpoint con las primeras veinte lecturas en reposo y detecta desviaciones del eje Z; guarda una ventana de un segundo antes y otro después del pico, y publica por MQTT solo los eventos que superan 0,58 g.</p><p>Está pensado para quien necesita saber cuánto golpeó un bus o un vehículo de flota sin transmitir cientos de muestras por segundo. Importa porque resuelve el problema en el borde: la detección y el recorte ocurren en la placa, el puerto serie queda para diagnóstico y la red recibe un único mensaje útil. La versión actual fue validada en banco, no en ruta.</p></div></div></section><section class="section" id="versiones"><div class="wrap">
+<section class="section tight"><div class="wrap"><div class="section-head reveal"><div class="kicker">El concepto</div><h2>Qué es y por qué existe</h2></div><div class="rich reveal"><p>busaccel es un registrador de impactos para vehículos construido sobre ESP8266 y un acelerómetro ADXL345. El firmware muestrea a unos 100 Hz, calcula un setpoint con las primeras veinte lecturas en reposo y detecta desviaciones del eje Z; guarda una ventana de un segundo antes y otro después del pico, y publica por MQTT solo los eventos que superan 0,58 g.</p><p>Está pensado para quien necesita saber cuánto golpeó un bus o un vehículo de flota sin transmitir cientos de muestras por segundo. Importa porque resuelve el problema en el borde: la detección y el recorte ocurren en la placa, el puerto serie queda para diagnóstico y la red recibe un único mensaje útil. La versión actual fue validada en banco, no en ruta.</p></div></div></section>
+<section class="section tight rec-section" id="video" style="--accent:#2E7DFF;--accent2:#14F195">
+<div class="wrap">
+<div class="rec-kicker">REC · VIDEO · 3:16</div>
+<h2 class="rec-h2">BusAccel: golpes sobre ruedas</h2>
+<p class="rec-lead">Un nodo ESP8266 con ADXL345 detecta golpes en el eje Z, guarda una ventana de dos segundos alrededor del evento y publica el pico por MQTT solo si supera el umbral. El video recorre el muestreo a 100 Hz, el setpoint dinámico, la histéresis, la persistencia del contador en RTC y la reconexión no bloqueante con watchdog de ping.</p>
+<div class="rec-banner">
+<span class="rec-banner-icon">📋</span>
+<strong>Puedes copiar y pegar los comandos del video desde el video !!!</strong>
+<span>Pausá, seleccioná el texto de la terminal y copiá.</span>
+</div>
+<div class="rec-shell">
+<div class="rec-bar"><i></i><i></i><i></i><span class="rec-title">BusAccel: golpes sobre ruedas · asciinema</span><span class="rec-rec"><b></b>REC</span></div>
+<div class="rec-screen-wrap">
+<div class="rec-screen" id="rec-screen"></div>
+<div class="rec-poster" id="rec-poster">
+<div class="rec-kicker">ASCIINEMA · 3:16</div>
+<h3>BusAccel: golpes sobre ruedas</h3>
+<p>Un nodo ESP8266 con ADXL345 detecta golpes en el eje Z, guarda una ventana de dos segundos alrededor del evento y publica el pico por MQTT solo si supera el umbral. El video recorre el muestreo a 100 Hz, el setpoint dinámico, la histéresis, la persistencia del contador en RTC y la reconexión no bloqueante con watchdog de ping.</p>
+<div class="rec-poster-meta">busaccel · código real</div>
+<button class="rec-btn rec-primary" id="rec-start" type="button">▶ Reproducir</button>
+</div>
+</div>
+<div class="rec-controls">
+<button class="rec-btn rec-primary" id="rec-play" type="button">▶ Reproducir</button>
+<button class="rec-btn" id="rec-restart" type="button">↺ Reiniciar</button>
+<input class="rec-progress" id="rec-range" type="range" min="0" max="1000" value="0" aria-label="Progreso"/>
+<span class="rec-time" id="rec-time">0:00 / 3:16</span>
+<select class="rec-speed" id="rec-speed" aria-label="Velocidad"><option value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+<button class="rec-btn" id="rec-full" type="button" title="Pantalla completa">⛶</button>
+<button class="rec-btn" id="rec-copy" type="button">⧉ Copiar comandos</button>
+<a class="rec-download" href="rec/busaccel.cast" download>descargar .cast</a>
+</div>
+</div>
+<p class="rec-note">Prototipo validado en banco con golpes manuales; no se desplegó en una flota ni se contrastó con un acelerómetro certificado.</p>
+<div class="rec-chapters"><span class="rec-chip"><b>0:06</b> EL PROBLEMA</span><span class="rec-chip"><b>0:20</b> HARDWARE</span><span class="rec-chip"><b>0:35</b> HARDWARE</span><span class="rec-chip"><b>0:48</b> EL NÚCLEO</span><span class="rec-chip"><b>1:00</b> EL NÚCLEO</span><span class="rec-chip"><b>1:15</b> DETECCIÓN</span><span class="rec-chip"><b>1:30</b> EVENTO</span><span class="rec-chip"><b>1:42</b> PERSISTENCIA</span><span class="rec-chip"><b>1:57</b> CONECTIVIDAD</span><span class="rec-chip"><b>2:12</b> CONECTIVIDAD</span><span class="rec-chip"><b>2:25</b> WATCHDOG</span><span class="rec-chip"><b>2:38</b> LOOP</span><span class="rec-chip"><b>2:52</b> CÓMO EJECUTARLO</span></div>
+</div>
+</section>
+
+<section class="section" id="versiones"><div class="wrap">
   <div class="section-head reveal"><div class="kicker">02 — Versiones</div><h2>La historia, completa.</h2><p class="section-sub">Cada carpeta conserva una etapa del proyecto. No se borraron las anteriores: se pusieron en contexto.</p></div>
   <div class="versions"><article class="version reveal">
   <div class="version-top"><h3>BusAccel-8266</h3><span class="count">13 archivos</span></div>
@@ -289,5 +330,7 @@ h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.04em;margin:
 <script>window.PORTFOLIO_COMMUNITY={account:"jmadasme",repo:"busaccel",coinNamespace:"jmadasme-busaccel-coins-v1",faqs:[{"q": "¿Por qué hay cuatro versiones?", "a": "Cada una resuelve un problema de la anterior: registro crudo, detección fallida, saturación del serial y umbral final."}, {"q": "¿Qué significa 0.58 g?", "a": "Es el umbral de aceleración que separó eventos reales de vibración normal en las pruebas del autor."}, {"q": "¿Sirve para otro vehículo?", "a": "Sí, pero hay que recalibrar. La vibración de un bus no es la de un auto."}, {"q": "¿Se pierden datos?", "a": "Se descarta la señal continua y se conserva la ventana del evento. Es una decisión de diseño, no un error."}, {"q": "¿Puedo usar ESP32?", "a": "El código es de ESP8266; portarlo requiere revisar pines y librerías WiFi."}]};</script>
 <script src="assets/community.js?v=2" defer></script>
 
+<script defer src="rec/busaccel.cast.js?v=1"></script>
+<script defer src="rec/player.js?v=1"></script>
 </body>
 </html>
